@@ -33,8 +33,11 @@
     <packaging>war</packaging>
     <name>Announcements Portlet</name>
     <version>2.4.7-SNAPSHOT</version>
+    <prerequisites><maven>3.3.1</maven></prerequisites>
 
     <properties>
+        <javaxAnnotationVersion>1.3.2</javaxAnnotationVersion>
+        <jaxbApiVersion>2.3.1</jaxbApiVersion>
         <junit.version>4.13.2</junit.version>
         <logback.version>1.2.3</logback.version>
         <resource-server.version>1.3.1</resource-server.version>
@@ -49,7 +52,7 @@
 
         <!-- Utility libraries -->
         <jackson.version>2.12.1</jackson.version>
-        <lombok.version>1.18.18</lombok.version>
+        <lombok.version>1.18.20</lombok.version>
     </properties>
 
     <url>http://www.ja-sig.org/wiki/display/PLT/Announcements+Portlet</url>
@@ -79,17 +82,10 @@
     </scm>
 
     <dependencies>
-
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+          <version>${jaxbApiVersion}</version>
         </dependency>
 
         <dependency>
@@ -97,6 +93,19 @@
             <artifactId>jaxb-impl</artifactId>
             <version>2.1.9</version>
         </dependency>
+
+        <dependency>
+          <groupId>javax.annotation</groupId>
+          <artifactId>javax.annotation-api</artifactId>
+          <version>${javaxAnnotationVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
 
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -381,6 +390,14 @@
         </testResources>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
@@ -410,7 +427,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.0.0-M4</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
@@ -426,11 +443,13 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
 
@@ -458,9 +477,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.0.0-M5</version>
                 <configuration>
                     <workingDirectory>src/main/webapp</workingDirectory>
+                    <argLine>--illegal-access=permit</argLine>
                 </configuration>
             </plugin>
             <!-- Plug-in to add lifecycles to support db-init, data-import, and data-export -->
@@ -476,6 +496,7 @@
              |
              |   >mvn db-init
              +-->
+            <!-- To import the announcement db tables, use mvn [-Ddir=dir] data-import -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -500,24 +521,6 @@
                             </tasks>
                         </configuration>
                     </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>javax.servlet-api</artifactId>
-                        <version>${servlet-api.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.portlet</groupId>
-                        <artifactId>portlet-api</artifactId>
-                        <version>2.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <!-- To import the announcement db tables, use mvn [-Ddir=dir] data-import -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
                     <execution>
                         <id>data-import</id>
                         <phase>data-import</phase>
@@ -594,6 +597,16 @@
                         <groupId>rhino</groupId>
                         <artifactId>js</artifactId>
                         <version>1.7R2</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
+                        <version>${servlet-api.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.portlet</groupId>
+                        <artifactId>portlet-api</artifactId>
+                        <version>2.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -694,7 +707,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
